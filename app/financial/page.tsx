@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { 
   DollarSign, 
   CreditCard, 
-  Bank, 
+  Building2, 
   Upload,
   Download,
   Eye,
@@ -624,11 +624,11 @@ export default function FinancialPage() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
-                        {payment.payment_method === 'bank' ? (
-                          <Bank className="h-4 w-4" />
-                        ) : (
-                          <CreditCard className="h-4 w-4" />
-                        )}
+                                        {payment.payment_method === 'bank' ? (
+                  <Building2 className="h-4 w-4" />
+                ) : (
+                  <CreditCard className="h-4 w-4" />
+                )}
                         {payment.payment_method}
                       </div>
                     </td>
