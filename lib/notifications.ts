@@ -1,169 +1,348 @@
-// Sistema de notificações integrado
-// Baseado nas especificações do email do Banco do Brasil
-
-interface NotificationConfig {
-  whatsapp: {
-    apiKey: string
-    enabled: boolean
-    templates: {
-      invoice_due: string
-      payment_received: string
-      system_alert: string
-    }
-  }
-  email: {
-    provider: 'sendgrid' | 'mailgun'
-    apiKey: string
-    enabled: boolean
-    templates: {
-      welcome: string
-      invoice: string
-      reminder: string
-    }
-  }
-}
+// Sistema de Notificações - Solar DG Platform
+// Integração com WhatsApp Business API, Email e SMS
 
 interface NotificationData {
-  type: 'invoice_due' | 'payment_received' | 'system_alert' | 'welcome' | 'invoice' | 'reminder'
+  type: 'invoice' | 'payment' | 'contract' | 'alert' | 'reminder'
   recipient: string
-  data: Record<string, any>
-  channel: 'whatsapp' | 'email' | 'both'
+  subject: string
+  message: string
+  data?: any
+  priority: 'low' | 'medium' | 'high' | 'urgent'
+}
+
+interface WhatsAppMessage {
+  phone: string
+  message: string
+  template?: string
+  variables?: Record<string, string>
+}
+
+interface EmailMessage {
+  to: string
+  subject: string
+  html: string
+  attachments?: Array<{
+    filename: string
+    content: string
+    contentType: string
+  }>
 }
 
 export class NotificationService {
-  private static config: NotificationConfig = {
-    whatsapp: {
-      apiKey: process.env.NEXT_PUBLIC_WHATSAPP_API_KEY || '',
-      enabled: process.env.NEXT_PUBLIC_WHATSAPP_ENABLED === 'true',
-      templates: {
-        invoice_due: 'Olá! Sua fatura de energia vence em {days} dias. Valor: R$ {amount}. Acesse: {link}',
-        payment_received: 'Pagamento confirmado! Fatura {invoice_number} - R$ {amount}. Obrigado!',
-        system_alert: 'Alerta do sistema: {message}. Acesse o painel para mais detalhes.'
-      }
+  private static readonly WHATSAPP_API_URL = process.env.NEXT_PUBLIC_WHATSAPP_API_URL
+  private static readonly WHATSAPP_API_KEY = process.env.NEXT_PUBLIC_WHATSAPP_API_KEY
+  private static readonly EMAIL_API_KEY = process.env.NEXT_PUBLIC_EMAIL_API_KEY
+  private static readonly SMS_API_KEY = process.env.NEXT_PUBLIC_SMS_API_KEY
+
+  // Templates de mensagens
+  private static readonly TEMPLATES = {
+    invoice: {
+      whatsapp: `🔔 *Nova Fatura Disponível*
+
+📄 Fatura: {invoiceNumber}
+💰 Valor: R$ {amount}
+📅 Vencimento: {dueDate}
+🏢 Distribuidora: {distributor}
+
+Acesse o sistema para mais detalhes:
+{systemUrl}`,
+      
+      email: `
+        <h2>🔔 Nova Fatura Disponível</h2>
+        <p><strong>Fatura:</strong> {invoiceNumber}</p>
+        <p><strong>Valor:</strong> R$ {amount}</p>
+        <p><strong>Vencimento:</strong> {dueDate}</p>
+        <p><strong>Distribuidora:</strong> {distributor}</p>
+        <br>
+        <a href="{systemUrl}" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+          Acessar Sistema
+        </a>
+      `
     },
-    email: {
-      provider: 'sendgrid',
-      apiKey: process.env.NEXT_PUBLIC_EMAIL_API_KEY || '',
-      enabled: process.env.NEXT_PUBLIC_EMAIL_ENABLED === 'true',
-      templates: {
-        welcome: 'Bem-vindo ao Solar DG Platform! Seus dados de acesso: {credentials}',
-        invoice: 'Nova fatura disponível: {invoice_number} - R$ {amount}. Vencimento: {due_date}',
-        reminder: 'Lembrete: Fatura {invoice_number} vence em {days} dias. Valor: R$ {amount}'
-      }
+
+    payment: {
+      whatsapp: `✅ *Pagamento Confirmado*
+
+💰 Valor: R$ {amount}
+📅 Data: {paymentDate}
+🏦 Banco: {bank}
+📄 Fatura: {invoiceNumber}
+
+Obrigado pelo pagamento!`,
+      
+      email: `
+        <h2>✅ Pagamento Confirmado</h2>
+        <p><strong>Valor:</strong> R$ {amount}</p>
+        <p><strong>Data:</strong> {paymentDate}</p>
+        <p><strong>Banco:</strong> {bank}</p>
+        <p><strong>Fatura:</strong> {invoiceNumber}</p>
+        <br>
+        <p>Obrigado pelo pagamento!</p>
+      `
+    },
+
+    contract: {
+      whatsapp: `📋 *Novo Contrato Disponível*
+
+📄 Contrato: {contractNumber}
+👤 Cliente: {clientName}
+📅 Início: {startDate}
+💰 Valor: R$ {monthlyValue}
+
+Acesse para assinar:
+{systemUrl}`,
+      
+      email: `
+        <h2>📋 Novo Contrato Disponível</h2>
+        <p><strong>Contrato:</strong> {contractNumber}</p>
+        <p><strong>Cliente:</strong> {clientName}</p>
+        <p><strong>Início:</strong> {startDate}</p>
+        <p><strong>Valor Mensal:</strong> R$ {monthlyValue}</p>
+        <br>
+        <a href="{systemUrl}" style="background: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+          Assinar Contrato
+        </a>
+      `
+    },
+
+    alert: {
+      whatsapp: `⚠️ *Alerta do Sistema*
+
+{message}
+
+Acesse para resolver:
+{systemUrl}`,
+      
+      email: `
+        <h2>⚠️ Alerta do Sistema</h2>
+        <p>{message}</p>
+        <br>
+        <a href="{systemUrl}" style="background: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+          Resolver
+        </a>
+      `
+    },
+
+    reminder: {
+      whatsapp: `⏰ *Lembrete*
+
+{message}
+
+Prazo: {deadline}
+{systemUrl}`,
+      
+      email: `
+        <h2>⏰ Lembrete</h2>
+        <p>{message}</p>
+        <p><strong>Prazo:</strong> {deadline}</p>
+        <br>
+        <a href="{systemUrl}" style="background: #ffc107; color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+          Ver Detalhes
+        </a>
+      `
     }
   }
 
+  // Enviar notificação completa
   static async sendNotification(data: NotificationData): Promise<boolean> {
     try {
-      const promises: Promise<boolean>[] = []
+      const promises = []
 
-      if (data.channel === 'whatsapp' || data.channel === 'both') {
-        if (this.config.whatsapp.enabled) {
-          promises.push(this.sendWhatsApp(data))
-        }
+      // WhatsApp (se configurado)
+      if (this.WHATSAPP_API_KEY && data.recipient.includes('@')) {
+        promises.push(this.sendWhatsApp(data))
       }
 
-      if (data.channel === 'email' || data.channel === 'both') {
-        if (this.config.email.enabled) {
-          promises.push(this.sendEmail(data))
-        }
+      // Email (sempre)
+      promises.push(this.sendEmail(data))
+
+      // SMS (se configurado e alta prioridade)
+      if (this.SMS_API_KEY && data.priority === 'urgent') {
+        promises.push(this.sendSMS(data))
       }
 
-      const results = await Promise.all(promises)
-      return results.some(result => result === true)
+      await Promise.allSettled(promises)
+      return true
     } catch (error) {
       console.error('Erro ao enviar notificação:', error)
       return false
     }
   }
 
+  // Enviar WhatsApp
   private static async sendWhatsApp(data: NotificationData): Promise<boolean> {
     try {
-      const template = this.config.whatsapp.templates[data.type]
-      if (!template) {
-        throw new Error(`Template WhatsApp não encontrado: ${data.type}`)
+      if (!this.WHATSAPP_API_KEY) return false
+
+      const template = this.TEMPLATES[data.type]
+      if (!template?.whatsapp) return false
+
+      const message = this.replaceVariables(template.whatsapp, data.data || {})
+      
+      const whatsappData: WhatsAppMessage = {
+        phone: data.recipient,
+        message,
+        template: data.type,
+        variables: data.data
       }
 
-      const message = this.replaceTemplateVariables(template, data.data)
-      
-      // Em produção, integrar com WhatsApp Business API
-      console.log('WhatsApp enviado:', {
-        to: data.recipient,
-        message,
-        template: data.type
+      const response = await fetch(`${this.WHATSAPP_API_URL}/messages`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.WHATSAPP_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(whatsappData)
       })
 
-      return true
+      return response.ok
     } catch (error) {
-      console.error('Erro ao enviar WhatsApp:', error)
+      console.error('Erro WhatsApp:', error)
       return false
     }
   }
 
+  // Enviar Email
   private static async sendEmail(data: NotificationData): Promise<boolean> {
     try {
-      const template = this.config.email.templates[data.type]
-      if (!template) {
-        throw new Error(`Template Email não encontrado: ${data.type}`)
+      const template = this.TEMPLATES[data.type]
+      if (!template?.email) return false
+
+      const html = this.replaceVariables(template.email, data.data || {})
+      
+      const emailData: EmailMessage = {
+        to: data.recipient,
+        subject: data.subject,
+        html
       }
 
-      const message = this.replaceTemplateVariables(template, data.data)
-      
-      // Em produção, integrar com SendGrid/Mailgun
-      console.log('Email enviado:', {
-        to: data.recipient,
-        subject: `Solar DG Platform - ${data.type}`,
-        message,
-        template: data.type
+      // Usar SendGrid ou similar
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(emailData)
       })
 
-      return true
+      return response.ok
     } catch (error) {
-      console.error('Erro ao enviar Email:', error)
+      console.error('Erro Email:', error)
       return false
     }
   }
 
-  private static replaceTemplateVariables(template: string, data: Record<string, any>): string {
-    return template.replace(/\{(\w+)\}/g, (match, key) => {
-      return data[key] || match
+  // Enviar SMS
+  private static async sendSMS(data: NotificationData): Promise<boolean> {
+    try {
+      if (!this.SMS_API_KEY) return false
+
+      const response = await fetch('/api/send-sms', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: data.recipient,
+          message: data.message
+        })
+      })
+
+      return response.ok
+    } catch (error) {
+      console.error('Erro SMS:', error)
+      return false
+    }
+  }
+
+  // Substituir variáveis nos templates
+  private static replaceVariables(template: string, variables: Record<string, string>): string {
+    let result = template
+    
+    for (const [key, value] of Object.entries(variables)) {
+      result = result.replace(new RegExp(`{${key}}`, 'g'), value)
+    }
+    
+    return result
+  }
+
+  // Notificações específicas
+  static async sendInvoiceNotification(invoiceData: any): Promise<boolean> {
+    return this.sendNotification({
+      type: 'invoice',
+      recipient: invoiceData.customerEmail,
+      subject: 'Nova Fatura Disponível',
+      message: `Fatura ${invoiceData.number} disponível`,
+      data: {
+        invoiceNumber: invoiceData.number,
+        amount: invoiceData.amount.toFixed(2),
+        dueDate: invoiceData.dueDate,
+        distributor: invoiceData.distributor,
+        systemUrl: `${process.env.NEXT_PUBLIC_APP_URL}/invoices/${invoiceData.id}`
+      },
+      priority: 'medium'
     })
   }
 
-  // Métodos específicos para tipos de notificação
-  static async sendInvoiceDue(recipient: string, invoiceData: any): Promise<boolean> {
+  static async sendPaymentConfirmation(paymentData: any): Promise<boolean> {
     return this.sendNotification({
-      type: 'invoice_due',
-      recipient,
-      data: invoiceData,
-      channel: 'both'
+      type: 'payment',
+      recipient: paymentData.customerEmail,
+      subject: 'Pagamento Confirmado',
+      message: `Pagamento de R$ ${paymentData.amount} confirmado`,
+      data: {
+        amount: paymentData.amount.toFixed(2),
+        paymentDate: paymentData.date,
+        bank: paymentData.bank,
+        invoiceNumber: paymentData.invoiceNumber
+      },
+      priority: 'low'
     })
   }
 
-  static async sendPaymentReceived(recipient: string, paymentData: any): Promise<boolean> {
+  static async sendContractNotification(contractData: any): Promise<boolean> {
     return this.sendNotification({
-      type: 'payment_received',
-      recipient,
-      data: paymentData,
-      channel: 'both'
+      type: 'contract',
+      recipient: contractData.customerEmail,
+      subject: 'Novo Contrato Disponível',
+      message: `Contrato ${contractData.number} disponível para assinatura`,
+      data: {
+        contractNumber: contractData.number,
+        clientName: contractData.clientName,
+        startDate: contractData.startDate,
+        monthlyValue: contractData.monthlyValue.toFixed(2),
+        systemUrl: `${process.env.NEXT_PUBLIC_APP_URL}/contracts/${contractData.id}`
+      },
+      priority: 'high'
     })
   }
 
-  static async sendSystemAlert(recipient: string, alertData: any): Promise<boolean> {
+  static async sendSystemAlert(alertData: any): Promise<boolean> {
     return this.sendNotification({
-      type: 'system_alert',
-      recipient,
-      data: alertData,
-      channel: 'email'
+      type: 'alert',
+      recipient: alertData.adminEmail,
+      subject: 'Alerta do Sistema',
+      message: alertData.message,
+      data: {
+        message: alertData.message,
+        systemUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
+      },
+      priority: 'urgent'
     })
   }
 
-  static async sendWelcome(recipient: string, credentials: any): Promise<boolean> {
+  static async sendReminder(reminderData: any): Promise<boolean> {
     return this.sendNotification({
-      type: 'welcome',
-      recipient,
-      data: credentials,
-      channel: 'email'
+      type: 'reminder',
+      recipient: reminderData.recipientEmail,
+      subject: 'Lembrete',
+      message: reminderData.message,
+      data: {
+        message: reminderData.message,
+        deadline: reminderData.deadline,
+        systemUrl: reminderData.systemUrl
+      },
+      priority: 'medium'
     })
   }
 } 

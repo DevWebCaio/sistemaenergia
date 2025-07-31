@@ -1,51 +1,72 @@
-// Gateway de pagamento integrado
-// Baseado nas especificações do email do Banco do Brasil
+// Sistema de Gateway de Pagamento - Solar DG Platform
+// Integração com Stripe, PagSeguro e MercadoPago
 
 interface PaymentData {
   amount: number
+  currency: string
   description: string
-  customer: {
-    name: string
-    email: string
-    cpf_cnpj: string
-  }
-  invoice_id: string
-  due_date: string
+  customerEmail: string
+  customerName: string
+  invoiceId: string
+  dueDate: string
+  metadata?: Record<string, string>
 }
 
-interface PaymentResponse {
+interface PaymentResult {
   success: boolean
-  transaction_id?: string
-  payment_url?: string
-  error?: string
+  paymentId?: string
+  status: 'pending' | 'approved' | 'rejected' | 'cancelled'
+  gateway: 'stripe' | 'pagseguro' | 'mercadopago'
+  message?: string
+  redirectUrl?: string
 }
 
-interface WebhookData {
-  transaction_id: string
-  status: 'paid' | 'pending' | 'failed' | 'cancelled'
-  amount: number
-  payment_date?: string
+interface PaymentConfig {
+  stripe: {
+    enabled: boolean
+    apiKey: string
+    webhookSecret: string
+  }
+  pagseguro: {
+    enabled: boolean
+    apiKey: string
+    email: string
+    sandbox: boolean
+  }
+  mercadopago: {
+    enabled: boolean
+    accessToken: string
+    publicKey: string
+  }
 }
 
 export class PaymentGateway {
-  private static readonly config = {
+  private static config: PaymentConfig = {
     stripe: {
+      enabled: process.env.NEXT_PUBLIC_STRIPE_ENABLED === 'true',
       apiKey: process.env.NEXT_PUBLIC_STRIPE_API_KEY || '',
-      enabled: process.env.NEXT_PUBLIC_STRIPE_ENABLED === 'true'
+      webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || ''
     },
     pagseguro: {
+      enabled: process.env.NEXT_PUBLIC_PAGSEGURO_ENABLED === 'true',
       apiKey: process.env.NEXT_PUBLIC_PAGSEGURO_API_KEY || '',
-      enabled: process.env.NEXT_PUBLIC_PAGSEGURO_ENABLED === 'true'
+      email: process.env.NEXT_PUBLIC_PAGSEGURO_EMAIL || '',
+      sandbox: process.env.NODE_ENV === 'development'
     },
     mercadopago: {
-      apiKey: process.env.NEXT_PUBLIC_MERCADOPAGO_API_KEY || '',
-      enabled: process.env.NEXT_PUBLIC_MERCADOPAGO_ENABLED === 'true'
+      enabled: process.env.NEXT_PUBLIC_MERCADOPAGO_ENABLED === 'true',
+      accessToken: process.env.NEXT_PUBLIC_MERCADOPAGO_API_KEY || '',
+      publicKey: process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY || ''
     }
   }
 
-  static async createPayment(data: PaymentData, provider: 'stripe' | 'pagseguro' | 'mercadopago' = 'stripe'): Promise<PaymentResponse> {
+  // Criar pagamento com gateway preferencial
+  static async createPayment(data: PaymentData, preferredGateway?: 'stripe' | 'pagseguro' | 'mercadopago'): Promise<PaymentResult> {
     try {
-      switch (provider) {
+      // Determinar gateway a ser usado
+      const gateway = this.selectGateway(preferredGateway)
+      
+      switch (gateway) {
         case 'stripe':
           return await this.createStripePayment(data)
         case 'pagseguro':
@@ -53,177 +74,240 @@ export class PaymentGateway {
         case 'mercadopago':
           return await this.createMercadoPagoPayment(data)
         default:
-          throw new Error('Provedor de pagamento não suportado')
+          throw new Error('Nenhum gateway de pagamento disponível')
       }
     } catch (error) {
       console.error('Erro ao criar pagamento:', error)
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
+        status: 'rejected',
+        gateway: 'stripe',
+        message: error instanceof Error ? error.message : 'Erro desconhecido'
       }
     }
   }
 
-  private static async createStripePayment(data: PaymentData): Promise<PaymentResponse> {
-    if (!this.config.stripe.enabled) {
-      throw new Error('Stripe não está habilitado')
+  // Selecionar gateway baseado na preferência e disponibilidade
+  private static selectGateway(preferred?: string): string {
+    if (preferred && this.config[preferred as keyof PaymentConfig]?.enabled) {
+      return preferred
     }
 
+    // Ordem de preferência
+    if (this.config.stripe.enabled) return 'stripe'
+    if (this.config.pagseguro.enabled) return 'pagseguro'
+    if (this.config.mercadopago.enabled) return 'mercadopago'
+
+    throw new Error('Nenhum gateway de pagamento configurado')
+  }
+
+  // Stripe Payment
+  private static async createStripePayment(data: PaymentData): Promise<PaymentResult> {
     try {
-      const stripe = require('stripe')(this.config.stripe.apiKey)
-      
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'brl',
-              product_data: {
-                name: data.description,
-              },
-              unit_amount: Math.round(data.amount * 100), // Stripe usa centavos
-            },
-            quantity: 1,
-          },
-        ],
-        mode: 'payment',
-        success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/cancel`,
-        metadata: {
-          invoice_id: data.invoice_id,
-          customer_email: data.customer.email,
-          customer_cpf: data.customer.cpf_cnpj
-        }
+      if (!this.config.stripe.enabled) {
+        throw new Error('Stripe não está habilitado')
+      }
+
+      const response = await fetch('/api/payments/stripe/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          amount: Math.round(data.amount * 100), // Stripe usa centavos
+          currency: data.currency,
+          description: data.description,
+          customer_email: data.customerEmail,
+          metadata: {
+            invoice_id: data.invoiceId,
+            customer_name: data.customerName,
+            due_date: data.dueDate,
+            ...data.metadata
+          }
+        })
       })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao criar pagamento Stripe')
+      }
 
       return {
         success: true,
-        transaction_id: session.id,
-        payment_url: session.url
+        paymentId: result.paymentIntent.id,
+        status: 'pending',
+        gateway: 'stripe',
+        redirectUrl: result.paymentIntent.next_action?.redirect_to_url?.url
       }
     } catch (error) {
-      console.error('Erro ao criar pagamento Stripe:', error)
+      console.error('Erro Stripe:', error)
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
+        status: 'rejected',
+        gateway: 'stripe',
+        message: error instanceof Error ? error.message : 'Erro Stripe'
       }
     }
   }
 
-  private static async createPagSeguroPayment(data: PaymentData): Promise<PaymentResponse> {
-    if (!this.config.pagseguro.enabled) {
-      throw new Error('PagSeguro não está habilitado')
-    }
-
-    // Em produção, integrar com PagSeguro API
-    console.log('Criando pagamento PagSeguro:', data)
-
-    return {
-      success: true,
-      transaction_id: `pagseguro_${Date.now()}`,
-      payment_url: `https://ws.sandbox.pagseguro.uol.com.br/v2/checkout?code=${Date.now()}`
-    }
-  }
-
-  private static async createMercadoPagoPayment(data: PaymentData): Promise<PaymentResponse> {
-    if (!this.config.mercadopago.enabled) {
-      throw new Error('Mercado Pago não está habilitado')
-    }
-
-    // Em produção, integrar com Mercado Pago API
-    console.log('Criando pagamento Mercado Pago:', data)
-
-    return {
-      success: true,
-      transaction_id: `mercadopago_${Date.now()}`,
-      payment_url: `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${Date.now()}`
-    }
-  }
-
-  static async validateWebhook(payload: string, signature: string, provider: 'stripe' | 'pagseguro' | 'mercadopago'): Promise<WebhookData | null> {
+  // PagSeguro Payment
+  private static async createPagSeguroPayment(data: PaymentData): Promise<PaymentResult> {
     try {
-      switch (provider) {
-        case 'stripe':
-          return await this.validateStripeWebhook(payload, signature)
-        case 'pagseguro':
-          return await this.validatePagSeguroWebhook(payload, signature)
-        case 'mercadopago':
-          return await this.validateMercadoPagoWebhook(payload, signature)
-        default:
-          throw new Error('Provedor de pagamento não suportado')
+      if (!this.config.pagseguro.enabled) {
+        throw new Error('PagSeguro não está habilitado')
+      }
+
+      const response = await fetch('/api/payments/pagseguro/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          amount: data.amount,
+          currency: data.currency,
+          description: data.description,
+          customer_email: data.customerEmail,
+          customer_name: data.customerName,
+          invoice_id: data.invoiceId,
+          due_date: data.dueDate,
+          metadata: data.metadata
+        })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao criar pagamento PagSeguro')
+      }
+
+      return {
+        success: true,
+        paymentId: result.payment.id,
+        status: 'pending',
+        gateway: 'pagseguro',
+        redirectUrl: result.payment.payment_url
       }
     } catch (error) {
-      console.error('Erro ao validar webhook:', error)
-      return null
+      console.error('Erro PagSeguro:', error)
+      return {
+        success: false,
+        status: 'rejected',
+        gateway: 'pagseguro',
+        message: error instanceof Error ? error.message : 'Erro PagSeguro'
+      }
     }
   }
 
-  private static async validateStripeWebhook(payload: string, signature: string): Promise<WebhookData | null> {
-    // Em produção, validar assinatura do Stripe
-    console.log('Validando webhook Stripe:', { payload, signature })
-
-    return {
-      transaction_id: `stripe_${Date.now()}`,
-      status: 'paid',
-      amount: 1250.00,
-      payment_date: new Date().toISOString()
-    }
-  }
-
-  private static async validatePagSeguroWebhook(payload: string, signature: string): Promise<WebhookData | null> {
-    // Em produção, validar assinatura do PagSeguro
-    console.log('Validando webhook PagSeguro:', { payload, signature })
-
-    return {
-      transaction_id: `pagseguro_${Date.now()}`,
-      status: 'paid',
-      amount: 1250.00,
-      payment_date: new Date().toISOString()
-    }
-  }
-
-  private static async validateMercadoPagoWebhook(payload: string, signature: string): Promise<WebhookData | null> {
-    // Em produção, validar assinatura do Mercado Pago
-    console.log('Validando webhook Mercado Pago:', { payload, signature })
-
-    return {
-      transaction_id: `mercadopago_${Date.now()}`,
-      status: 'paid',
-      amount: 1250.00,
-      payment_date: new Date().toISOString()
-    }
-  }
-
-  static async refundPayment(transactionId: string, amount: number, provider: 'stripe' | 'pagseguro' | 'mercadopago'): Promise<boolean> {
+  // MercadoPago Payment
+  private static async createMercadoPagoPayment(data: PaymentData): Promise<PaymentResult> {
     try {
-      switch (provider) {
-        case 'stripe':
-          return await this.refundStripePayment(transactionId, amount)
-        case 'pagseguro':
-          return await this.refundPagSeguroPayment(transactionId, amount)
-        case 'mercadopago':
-          return await this.refundMercadoPagoPayment(transactionId, amount)
-        default:
-          throw new Error('Provedor de pagamento não suportado')
+      if (!this.config.mercadopago.enabled) {
+        throw new Error('MercadoPago não está habilitado')
+      }
+
+      const response = await fetch('/api/payments/mercadopago/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          amount: data.amount,
+          currency: data.currency,
+          description: data.description,
+          customer_email: data.customerEmail,
+          customer_name: data.customerName,
+          invoice_id: data.invoiceId,
+          due_date: data.dueDate,
+          metadata: data.metadata
+        })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao criar pagamento MercadoPago')
+      }
+
+      return {
+        success: true,
+        paymentId: result.payment.id,
+        status: 'pending',
+        gateway: 'mercadopago',
+        redirectUrl: result.payment.init_point
       }
     } catch (error) {
-      console.error('Erro ao reembolsar pagamento:', error)
+      console.error('Erro MercadoPago:', error)
+      return {
+        success: false,
+        status: 'rejected',
+        gateway: 'mercadopago',
+        message: error instanceof Error ? error.message : 'Erro MercadoPago'
+      }
+    }
+  }
+
+  // Verificar status do pagamento
+  static async checkPaymentStatus(paymentId: string, gateway: string): Promise<PaymentResult> {
+    try {
+      const response = await fetch(`/api/payments/${gateway}/status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ paymentId })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao verificar status')
+      }
+
+      return {
+        success: true,
+        paymentId,
+        status: result.status,
+        gateway: gateway as any,
+        message: result.message
+      }
+    } catch (error) {
+      console.error('Erro ao verificar status:', error)
+      return {
+        success: false,
+        status: 'rejected',
+        gateway: gateway as any,
+        message: error instanceof Error ? error.message : 'Erro desconhecido'
+      }
+    }
+  }
+
+  // Processar webhook
+  static async processWebhook(payload: any, signature: string, gateway: string): Promise<boolean> {
+    try {
+      const response = await fetch(`/api/payments/${gateway}/webhook`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Signature': signature
+        },
+        body: JSON.stringify(payload)
+      })
+
+      return response.ok
+    } catch (error) {
+      console.error('Erro ao processar webhook:', error)
       return false
     }
   }
 
-  private static async refundStripePayment(transactionId: string, amount: number): Promise<boolean> {
-    console.log('Reembolsando pagamento Stripe:', { transactionId, amount })
-    return true
+  // Obter configurações dos gateways
+  static getGatewayConfig(): PaymentConfig {
+    return this.config
   }
 
-  private static async refundPagSeguroPayment(transactionId: string, amount: number): Promise<boolean> {
-    console.log('Reembolsando pagamento PagSeguro:', { transactionId, amount })
-    return true
-  }
-
-  private static async refundMercadoPagoPayment(transactionId: string, amount: number): Promise<boolean> {
-    console.log('Reembolsando pagamento Mercado Pago:', { transactionId, amount })
-    return true
+  // Atualizar configurações
+  static updateConfig(newConfig: Partial<PaymentConfig>): void {
+    this.config = { ...this.config, ...newConfig }
   }
 } 
