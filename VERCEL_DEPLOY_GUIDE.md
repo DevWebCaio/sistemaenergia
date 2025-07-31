@@ -46,6 +46,8 @@ NEXT_PUBLIC_APP_URL=https://sistemaenergia.vercel.app
 NODE_ENV=production
 ```
 
+**⚠️ IMPORTANTE:** O projeto já está configurado para usar `--legacy-peer-deps` no Vercel para resolver conflitos de dependências.
+
 ### **PASSO 4: EXECUTAR DEPLOY**
 
 1. Clique em **"Deploy"**
