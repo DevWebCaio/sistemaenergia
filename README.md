@@ -1,163 +1,269 @@
-# 🚀 Solar DG Platform - MVP
+# 🚀 Sistema Energia - Solar DG Platform
 
-Sistema completo de gestão de energia solar distribuída para empresas do setor fotovoltaico.
+## 📋 Descrição
 
-## ✨ Funcionalidades Implementadas
+Sistema completo de gestão de energia solar distribuída desenvolvido com Next.js 15, TypeScript, TailwindCSS e Supabase. Plataforma moderna para controle de unidades consumidoras, usinas de energia, faturas, contratos e análise financeira.
 
-### ✅ **MVP Completo (90% funcional)**
+## ✨ Funcionalidades
 
-1. **📊 Dashboard Principal**
-   - Métricas em tempo real
-   - Cards de estatísticas
-   - Atividades recentes
-   - Ações rápidas
+### 🏠 **Dashboard**
+- Métricas em tempo real
+- Gráficos de performance
+- Atividades recentes
+- Visão geral do sistema
 
-2. **💰 Gestão de Faturas**
-   - Upload de PDFs
-   - Processamento automático
-   - Listagem com filtros
-   - Status tracking
+### 🏢 **Unidades Consumidoras**
+- CRUD completo de UCs
+- Gestão de instalações
+- Controle de distribuidoras
+- Monitoramento de consumo
 
-3. **🏦 Integração Banco do Brasil**
-   - Geração de arquivos CNAB240
-   - Configuração do convênio
-   - Remessa bancária
-   - Dados do Consórcio Moara
+### ⚡ **Usinas de Energia**
+- Cadastro de plantas solares
+- Controle de potência instalada
+- Gestão de CNPJ e operação
+- Status de funcionamento
 
-4. **⚡ Usinas de Energia**
-   - CRUD completo
-   - Métricas de capacidade
-   - Status management
-   - Busca e filtros
+### 🔋 **Cofre Energético**
+- Compensação de energia
+- Upload de PDFs
+- Extração automática de dados
+- Histórico de transações
 
-5. **👥 CRM Pipeline**
-   - Pipeline Kanban visual
-   - 8 estágios de conversão
-   - Gestão de clientes
-   - Métricas de performance
+### 📄 **Contratos**
+- Gestão de contratos
+- Assinatura digital
+- Controle de vigência
+- Status de ativação
 
-6. **🏢 Unidades Consumidoras**
-   - CRUD completo
-   - Validações
-   - Status tracking
-   - Busca inteligente
+### 📊 **Faturas**
+- Processamento automático
+- Upload de PDFs
+- Extração de dados
+- Controle de vencimentos
 
-7. **💳 Sistema Financeiro**
-   - Gestão de pagamentos
-   - Integração BB
-   - Status tracking
-   - Relatórios
+### 💰 **Financeiro**
+- Integração Banco do Brasil
+- Geração de remessa CNAB240
+- Controle de pagamentos
+- Gestão de cobranças
 
-## 🛠️ Configuração
+### 👥 **CRM**
+- Pipeline de vendas
+- Gestão de clientes
+- Controle de leads
+- Follow-up automático
 
-### 1. Instalação
+### 📈 **Relatórios**
+- Analytics avançados
+- Gráficos interativos
+- Exportação de dados
+- Métricas de performance
 
+### ⚙️ **Configurações**
+- Configurações do sistema
+- Notificações
+- Gateways de pagamento
+- Segurança
+
+## 🛠️ Tecnologias
+
+- **Frontend:** Next.js 15, React 19, TypeScript
+- **Styling:** TailwindCSS, ShadCN/UI
+- **Backend:** Supabase (PostgreSQL, Auth, Storage)
+- **Deploy:** Vercel
+- **APIs:** WhatsApp Business, SendGrid, Twilio
+- **Pagamentos:** Stripe, PagSeguro, MercadoPago
+
+## 🚀 Deploy
+
+### **Repositório GitHub:**
+```
+https://github.com/DevWebCaio/sistemaenergia
+```
+
+### **URL de Produção:**
+```
+https://sistemaenergia.vercel.app
+```
+
+## 📦 Instalação
+
+### **Pré-requisitos:**
+- Node.js 18+
+- npm ou pnpm
+- Conta Supabase
+
+### **1. Clone o repositório:**
 ```bash
-# Instalar dependências
-npm install
+git clone https://github.com/DevWebCaio/sistemaenergia.git
+cd sistemaenergia
+```
 
-# Configurar variáveis de ambiente
+### **2. Instale as dependências:**
+```bash
+npm install
+```
+
+### **3. Configure as variáveis de ambiente:**
+```bash
 cp env.example .env.local
 ```
 
-### 2. Configuração do Supabase
+Edite o `.env.local`:
+```env
+NEXT_PUBLIC_SUPABASE_URL=sua_url_supabase
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima
+SUPABASE_SERVICE_ROLE_KEY=sua_chave_service_role
+```
 
-1. Crie um projeto no [Supabase](https://supabase.com)
-2. Execute os scripts SQL em `scripts/`:
-   ```bash
-   # Executar schema completo
-   psql -h your-project.supabase.co -U postgres -d postgres -f scripts/create-complete-database-schema.sql
-   ```
+### **4. Execute o projeto:**
+```bash
+npm run dev
+```
 
-3. Configure as variáveis de ambiente:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-   ```
+Acesse: `http://localhost:3000`
 
-### 3. Executar o Sistema
+## 🔧 Configuração
+
+### **Supabase:**
+1. Crie um projeto no Supabase
+2. Execute o script SQL: `scripts/create-complete-database-schema.sql`
+3. Configure as variáveis de ambiente
+
+### **APIs Externas:**
+- **WhatsApp Business:** Para notificações
+- **SendGrid:** Para emails
+- **Twilio:** Para SMS
+- **Stripe/PagSeguro/MercadoPago:** Para pagamentos
+
+## 📊 Estrutura do Projeto
+
+```
+sistemaenergia/
+├── app/                    # Páginas Next.js 15 (App Router)
+│   ├── api/               # APIs serverless
+│   ├── dashboard/         # Dashboard principal
+│   ├── consumer-units/    # Unidades consumidoras
+│   ├── power-plants/      # Usinas de energia
+│   ├── energy-vault/      # Cofre energético
+│   ├── contracts/         # Contratos
+│   ├── invoices/          # Faturas
+│   ├── financial/         # Sistema financeiro
+│   ├── crm/              # CRM
+│   ├── reports/          # Relatórios
+│   └── settings/         # Configurações
+├── components/            # Componentes React
+│   ├── ui/               # Componentes UI (ShadCN)
+│   └── layout/           # Layout components
+├── lib/                  # Bibliotecas e utilitários
+│   ├── supabase/         # Cliente Supabase
+│   ├── automation.ts     # Sistema de automação
+│   ├── notifications.ts  # Sistema de notificações
+│   ├── payment-gateway.ts # Gateway de pagamento
+│   └── pdf-parser.ts     # Parser de PDFs
+├── scripts/              # Scripts SQL
+└── public/               # Arquivos estáticos
+```
+
+## 🎨 Design System
+
+### **Cores:**
+- **Primária:** Azul (#3B82F6)
+- **Secundária:** Cinza (#6B7280)
+- **Sucesso:** Verde (#10B981)
+- **Aviso:** Amarelo (#F59E0B)
+- **Erro:** Vermelho (#EF4444)
+
+### **Tipografia:**
+- **Fonte:** Inter (Google Fonts)
+- **Tamanhos:** 12px, 14px, 16px, 18px, 24px, 32px
+- **Pesos:** 400, 500, 600, 700
+
+### **Componentes:**
+- **Cards:** Fundo branco, bordas suaves
+- **Botões:** Hover cinza, transições suaves
+- **Tabelas:** Linhas alternadas, hover effects
+- **Formulários:** Validação em tempo real
+
+## 🔒 Segurança
+
+- **Autenticação:** Supabase Auth
+- **RLS:** Row Level Security
+- **HTTPS:** Forçado em produção
+- **CORS:** Configurado adequadamente
+- **Rate Limiting:** Implementado nas APIs
+
+## 📈 Performance
+
+- **Build:** Otimizado com Next.js 15
+- **Images:** Otimização automática
+- **Fonts:** Carregamento otimizado
+- **Bundle:** Code splitting automático
+- **Caching:** Estratégias implementadas
+
+## 🧪 Testes
+
+```bash
+# Testes unitários
+npm run test
+
+# Testes de integração
+npm run test:integration
+
+# Coverage
+npm run test:coverage
+```
+
+## 📝 Scripts Disponíveis
 
 ```bash
 # Desenvolvimento
 npm run dev
 
-# Produção
+# Build de produção
 npm run build
+
+# Start de produção
 npm start
+
+# Lint
+npm run lint
+
+# Type check
+npm run type-check
 ```
 
-## 🏦 Configuração Banco do Brasil
+## 🤝 Contribuição
 
-O sistema está configurado com os dados do convênio:
+1. Fork o projeto
+2. Crie uma branch: `git checkout -b feature/nova-funcionalidade`
+3. Commit: `git commit -m 'feat: Adicionar nova funcionalidade'`
+4. Push: `git push origin feature/nova-funcionalidade`
+5. Abra um Pull Request
 
-- **Agência:** 3205 - MANOEL HONORIO
-- **Beneficiário:** 662178 - CONSORCIO MOARA
-- **Carteira/Variação:** 17/019 SIMPLES COM REGISTRO
-- **Convênio:** 3736097
-- **Contrato:** 20514776
-- **Formato:** CNAB 240
+## 📄 Licença
 
-## 📁 Estrutura do Projeto
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-```
-solar-dg-platform/
-├── app/                     # Next.js App Router
-│   ├── dashboard/          # Dashboard principal
-│   ├── invoices/           # Gestão de faturas
-│   ├── financial/          # Sistema financeiro
-│   ├── consumer-units/     # UCs
-│   ├── power-plants/       # Usinas
-│   ├── crm/               # CRM
-│   └── layout.tsx         # Layout principal
-├── components/            # Componentes UI
-├── lib/                  # Configurações
-├── scripts/              # Scripts SQL
-└── public/              # Assets
-```
+## 📞 Suporte
 
-## 🔧 Tecnologias
+- **Email:** suporte@solardg.com
+- **Documentação:** [docs.solardg.com](https://docs.solardg.com)
+- **Issues:** [GitHub Issues](https://github.com/DevWebCaio/sistemaenergia/issues)
 
-- **Frontend:** Next.js 15 + React 19 + TypeScript
-- **UI:** TailwindCSS + ShadCN
-- **Backend:** Supabase (PostgreSQL + Auth)
-- **Banco:** PostgreSQL com RLS
-- **Deploy:** Vercel
+## 🚀 Roadmap
 
-## 🚀 Próximos Passos
-
-### Fase 1 - Finalização (1 semana)
-- [ ] Implementar parser de PDFs real
-- [ ] Conectar com APIs de distribuidoras
-- [ ] Sistema de notificações
-- [ ] Testes automatizados
-
-### Fase 2 - Integrações (2 semanas)
-- [ ] Gateway de pagamento (Stripe/PagSeguro)
-- [ ] WhatsApp Business API
-- [ ] Email marketing
-- [ ] APIs CEMIG/Enel
-
-### Fase 3 - Automação (1 semana)
-- [ ] Geração automática de faturas
-- [ ] Workflows de aprovação
-- [ ] Alertas inteligentes
-- [ ] Relatórios avançados
-
-## 📊 Status do Projeto
-
-- **Completude:** 90%
-- **Funcionalidades:** 8/10 módulos
-- **Integrações:** BB implementado
-- **UI/UX:** 100% responsivo
-- **Performance:** Otimizado
-
-## 🎯 ROI Projetado
-
-- **Redução 80%** no tempo de gestão manual
-- **Aumento 50%** na conversão de leads
-- **Economia 70%** em processos administrativos
-- **Break-even:** 6-8 meses
+- [ ] **PWA:** Progressive Web App
+- [ ] **Mobile:** App nativo React Native
+- [ ] **AI:** Integração com IA para análise
+- [ ] **IoT:** Conectividade com dispositivos
+- [ ] **Multi-tenant:** Suporte a múltiplos clientes
+- [ ] **API REST:** Documentação completa
+- [ ] **Webhooks:** Integração com sistemas externos
 
 ---
 
-**Sistema pronto para produção com foco nas funcionalidades críticas do negócio.** 
+**⭐ Se este projeto te ajudou, considere dar uma estrela no GitHub!**
+
+**Desenvolvido com ❤️ pela equipe Solar DG Platform** 
