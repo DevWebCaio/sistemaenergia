@@ -56,4 +56,20 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Garantir que botões sejam clicáveis */
+  button {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+  
+  /* Evitar sobreposições que bloqueiem cliques */
+  .relative {
+    position: relative;
+  }
+  
+  /* Garantir que elementos com z-index sejam clicáveis */
+  [class*="z-"] {
+    pointer-events: auto;
+  }
 } 

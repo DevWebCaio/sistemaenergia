@@ -26,7 +26,7 @@ export function MainLayout({ children, userRole }: MainLayoutProps) {
       <Sidebar userRole={userRole} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6 bg-white">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6 bg-white relative z-0">
           {!isSupabaseConfigured && (
             <Alert className="mb-6 border-yellow-200 bg-yellow-50">
               <AlertTriangle className="h-4 w-4 text-yellow-600" />

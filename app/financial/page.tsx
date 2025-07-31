@@ -76,6 +76,7 @@ export default function FinancialPage() {
   }
 
   const generateBBRemessa = async () => {
+    console.log("🔘 Botão Gerar Remessa BB clicado!")
     try {
       setGeneratingRemessa(true)
       
@@ -531,7 +532,8 @@ export default function FinancialPage() {
             variant="outline" 
             onClick={generateBBRemessa} 
             disabled={generatingRemessa}
-            className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+            className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700 cursor-pointer relative z-10"
+            type="button"
           >
             {generatingRemessa ? (
               <>
@@ -640,14 +642,18 @@ export default function FinancialPage() {
                         <Button 
                           size="sm" 
                           variant="outline"
-                          className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                          className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700 cursor-pointer relative z-10"
+                          onClick={() => console.log("🔘 Botão Visualizar clicado!")}
+                          type="button"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
                         <Button 
                           size="sm" 
                           variant="outline"
-                          className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                          className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700 cursor-pointer relative z-10"
+                          onClick={() => console.log("🔘 Botão Download clicado!")}
+                          type="button"
                         >
                           <Download className="h-4 w-4" />
                         </Button>
