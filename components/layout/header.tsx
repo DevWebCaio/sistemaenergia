@@ -19,44 +19,60 @@ export function Header() {
   const { user, signOut } = useAuth()
 
   return (
-    <header className="flex h-14 items-center gap-4 border-b bg-white px-4 lg:px-6">
+    <header className="flex h-14 items-center gap-4 border-b border-gray-100 bg-white px-4 lg:px-6">
       <div className="flex-1">
         <div className="relative max-w-md">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-          <Input type="search" placeholder="Buscar..." className="pl-8 bg-gray-50 border-gray-200" />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+          <Input 
+            type="search" 
+            placeholder="Buscar..." 
+            className="pl-8 bg-gray-50 border-gray-200 text-gray-700 placeholder-gray-500 focus:bg-white focus:border-blue-500" 
+          />
         </div>
       </div>
 
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="relative">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="relative text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+        >
           <Bell className="h-4 w-4" />
-          <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs">3</Badge>
+          <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs bg-red-500 text-white">3</Badge>
         </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+            <Button 
+              variant="ghost" 
+              className="relative h-8 w-8 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+            >
               <Avatar className="h-8 w-8">
                 <AvatarImage src="/placeholder.svg" alt="Avatar" />
-                <AvatarFallback>
+                <AvatarFallback className="bg-gray-100 text-gray-600">
                   <User className="h-4 w-4" />
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuContent className="w-56 bg-white border border-gray-200" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user?.email || "Usuário"}</p>
+                <p className="text-sm font-medium leading-none text-gray-900">{user?.email || "Usuário"}</p>
                 <p className="text-xs leading-none text-gray-500">{user?.email}</p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Perfil</DropdownMenuItem>
-            <DropdownMenuItem>Configurações</DropdownMenuItem>
-            <DropdownMenuItem>Suporte</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={signOut}>Sair</DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-gray-100" />
+            <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-50">Perfil</DropdownMenuItem>
+            <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-50">Configurações</DropdownMenuItem>
+            <DropdownMenuItem className="text-gray-700 hover:text-gray-900 hover:bg-gray-50">Suporte</DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-gray-100" />
+            <DropdownMenuItem 
+              onClick={signOut}
+              className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            >
+              Sair
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

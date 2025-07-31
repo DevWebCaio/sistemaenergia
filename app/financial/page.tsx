@@ -527,10 +527,15 @@ export default function FinancialPage() {
           <p className="text-gray-600">Gestão de pagamentos e cobrança bancária</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={generateBBRemessa} disabled={generatingRemessa}>
+          <Button 
+            variant="outline" 
+            onClick={generateBBRemessa} 
+            disabled={generatingRemessa}
+            className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+          >
             {generatingRemessa ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
                 Gerando...
               </>
             ) : (
@@ -544,76 +549,72 @@ export default function FinancialPage() {
       </div>
 
       {/* Configuração BB */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Configuração Banco do Brasil</CardTitle>
-          <CardDescription>
-            Dados do convênio de cobrança bancária
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900">Configuração Banco do Brasil</h3>
+          <p className="text-sm text-gray-600">Dados do convênio de cobrança bancária</p>
+        </div>
+        <div className="px-6 py-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             <div>
-              <label className="text-sm font-medium">Agência</label>
-              <p className="text-lg font-semibold">{bbConfig.agency}</p>
+              <label className="text-sm font-medium text-gray-700">Agência</label>
+              <p className="text-lg font-semibold text-gray-900">{bbConfig.agency}</p>
             </div>
             <div>
-              <label className="text-sm font-medium">Beneficiário</label>
-              <p className="text-lg font-semibold">{bbConfig.beneficiary}</p>
+              <label className="text-sm font-medium text-gray-700">Beneficiário</label>
+              <p className="text-lg font-semibold text-gray-900">{bbConfig.beneficiary}</p>
             </div>
             <div>
-              <label className="text-sm font-medium">Carteira/Variação</label>
-              <p className="text-lg font-semibold">{bbConfig.carteira}</p>
+              <label className="text-sm font-medium text-gray-700">Carteira/Variação</label>
+              <p className="text-lg font-semibold text-gray-900">{bbConfig.carteira}</p>
             </div>
             <div>
-              <label className="text-sm font-medium">Convênio</label>
-              <p className="text-lg font-semibold">{bbConfig.convenio}</p>
+              <label className="text-sm font-medium text-gray-700">Convênio</label>
+              <p className="text-lg font-semibold text-gray-900">{bbConfig.convenio}</p>
             </div>
             <div>
-              <label className="text-sm font-medium">Contrato</label>
-              <p className="text-lg font-semibold">{bbConfig.contract}</p>
+              <label className="text-sm font-medium text-gray-700">Contrato</label>
+              <p className="text-lg font-semibold text-gray-900">{bbConfig.contract}</p>
             </div>
             <div>
-              <label className="text-sm font-medium">Último Nosso Número</label>
-              <p className="text-lg font-semibold">{bbConfig.last_number}</p>
+              <label className="text-sm font-medium text-gray-700">Último Nosso Número</label>
+              <p className="text-lg font-semibold text-gray-900">{bbConfig.last_number}</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Pagamentos */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Pagamentos</CardTitle>
-          <CardDescription>
-            Lista de pagamentos e cobranças
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900">Pagamentos</h3>
+          <p className="text-sm text-gray-600">Lista de pagamentos e cobranças</p>
+        </div>
+        <div className="px-6 py-4">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left py-3 px-4">Fatura</th>
-                  <th className="text-left py-3 px-4">Valor</th>
-                  <th className="text-left py-3 px-4">Vencimento</th>
-                  <th className="text-left py-3 px-4">Status</th>
-                  <th className="text-left py-3 px-4">Método</th>
-                  <th className="text-left py-3 px-4">Ações</th>
+                <tr className="border-b border-gray-100">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Fatura</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Valor</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Vencimento</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Status</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Método</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {payments.map((payment) => (
-                  <tr key={payment.id} className="border-b hover:bg-gray-50">
+                  <tr key={payment.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                     <td className="py-3 px-4">
-                      <div className="font-medium">#{payment.invoice_id}</div>
+                      <div className="font-medium text-gray-900">#{payment.invoice_id}</div>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="font-medium">
+                      <div className="font-medium text-gray-900">
                         R$ {payment.amount.toLocaleString('pt-BR')}
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 text-gray-700">
                       {new Date(payment.due_date).toLocaleDateString('pt-BR')}
                     </td>
                     <td className="py-3 px-4">
@@ -625,21 +626,29 @@ export default function FinancialPage() {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                                        {payment.payment_method === 'bank' ? (
-                  <Building2 className="h-4 w-4" />
-                ) : (
-                  <CreditCard className="h-4 w-4" />
-                )}
-                        {payment.payment_method}
+                      <div className="flex items-center gap-2 text-gray-700">
+                        {payment.payment_method === 'bank' ? (
+                          <Building2 className="h-4 w-4" />
+                        ) : (
+                          <CreditCard className="h-4 w-4" />
+                        )}
+                        <span className="text-sm">{payment.payment_method}</span>
                       </div>
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                        >
                           <Download className="h-4 w-4" />
                         </Button>
                       </div>
@@ -649,8 +658,8 @@ export default function FinancialPage() {
               </tbody>
             </table>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 } 

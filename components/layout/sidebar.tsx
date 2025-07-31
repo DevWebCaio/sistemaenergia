@@ -110,11 +110,11 @@ export function Sidebar() {
   }
 
   return (
-    <div className="flex h-full w-64 flex-col bg-white border-r border-gray-200">
-      <div className="flex h-16 items-center px-6 border-b border-gray-200">
+    <div className="flex h-full w-64 flex-col bg-white border-r border-gray-100">
+      <div className="flex h-16 items-center px-6 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <Zap className="h-8 w-8 text-blue-600" />
-          <span className="text-xl font-bold text-gray-900">Moara Gestão</span>
+          <span className="text-xl font-semibold text-gray-800">Moara Gestão</span>
         </div>
       </div>
 
@@ -130,13 +130,13 @@ export function Sidebar() {
                   <Button
                     variant="ghost"
                     className={cn(
-                      "w-full justify-between text-left font-normal",
-                      isActive(item.href) && "bg-blue-50 text-blue-700",
+                      "w-full justify-between text-left font-normal text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors",
+                      isActive(item.href) && "bg-blue-50 text-blue-700 border-r-2 border-blue-600",
                     )}
                   >
                     <div className="flex items-center gap-3">
                       <item.icon className="h-5 w-5" />
-                      <span>{item.name}</span>
+                      <span className="font-medium">{item.name}</span>
                     </div>
                     {isItemOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                   </Button>
@@ -148,12 +148,12 @@ export function Sidebar() {
                         variant="ghost"
                         size="sm"
                         className={cn(
-                          "w-full justify-start font-normal",
-                          isActive(child.href) && "bg-blue-50 text-blue-700",
+                          "w-full justify-start font-normal text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors",
+                          isActive(child.href) && "bg-blue-50 text-blue-700 border-r-2 border-blue-600",
                         )}
                       >
                         <child.icon className="h-4 w-4 mr-3" />
-                        {child.name}
+                        <span className="font-medium">{child.name}</span>
                       </Button>
                     </Link>
                   ))}
@@ -166,10 +166,13 @@ export function Sidebar() {
             <Link key={item.name} href={item.href}>
               <Button
                 variant="ghost"
-                className={cn("w-full justify-start font-normal", isActive(item.href) && "bg-blue-50 text-blue-700")}
+                className={cn(
+                  "w-full justify-start font-normal text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors",
+                  isActive(item.href) && "bg-blue-50 text-blue-700 border-r-2 border-blue-600"
+                )}
               >
                 <item.icon className="h-5 w-5 mr-3" />
-                {item.name}
+                <span className="font-medium">{item.name}</span>
               </Button>
             </Link>
           )
