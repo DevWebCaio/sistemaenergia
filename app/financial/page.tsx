@@ -87,13 +87,15 @@ export default function FinancialPage() {
       const url = URL.createObjectURL(blob)
       
       // Download do arquivo
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `remessa_bb_${new Date().toISOString().split('T')[0]}.rem`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+      if (typeof document !== 'undefined') {
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `remessa_bb_${new Date().toISOString().split('T')[0]}.rem`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      }
 
       alert("Arquivo de remessa gerado com sucesso!")
     } catch (error) {

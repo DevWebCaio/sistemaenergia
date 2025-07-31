@@ -112,13 +112,15 @@ export default function ReportsPage() {
       }
 
       // Download do arquivo
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${fileName}.${format === 'pdf' ? 'pdf' : 'csv'}`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+      if (typeof document !== 'undefined') {
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${fileName}.${format === 'pdf' ? 'pdf' : 'csv'}`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      }
     } catch (error) {
       console.error('Erro ao exportar relatório:', error)
       alert('Erro ao exportar relatório')
