@@ -96,14 +96,14 @@ export default function PowerPlantsPage() {
       </div>
 
       {/* Lista de Usinas */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Usinas de Energia</CardTitle>
-          <CardDescription>
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900">Usinas de Energia</h3>
+          <p className="text-sm text-gray-600 mt-1">
             Lista de todas as usinas cadastradas
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        </div>
+        <div className="px-6 py-4">
           {/* Busca */}
           <div className="mb-4">
             <div className="relative">
@@ -112,7 +112,7 @@ export default function PowerPlantsPage() {
                 placeholder="Buscar usinas..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 border-gray-200 focus:border-blue-500"
               />
             </div>
           </div>
@@ -121,31 +121,31 @@ export default function PowerPlantsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left py-3 px-4">Nome</th>
-                  <th className="text-left py-3 px-4">CNPJ</th>
-                  <th className="text-left py-3 px-4">Potência</th>
-                  <th className="text-left py-3 px-4">Data Operação</th>
-                  <th className="text-left py-3 px-4">Status</th>
-                  <th className="text-left py-3 px-4">Ações</th>
+                <tr className="border-b border-gray-100">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Nome</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">CNPJ</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Potência</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Data Operação</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Status</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredPlants.map((plant) => (
-                  <tr key={plant.id} className="border-b hover:bg-gray-50">
+                  <tr key={plant.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                     <td className="py-3 px-4">
-                      <div className="font-medium">{plant.name}</div>
+                      <div className="font-medium text-gray-900">{plant.name}</div>
                       <div className="text-sm text-gray-500">{plant.address}</div>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="font-medium">{plant.cnpj}</div>
+                      <div className="font-medium text-gray-900">{plant.cnpj}</div>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="font-medium">
+                      <div className="font-medium text-gray-900">
                         {plant.installed_power_kwp.toLocaleString('pt-BR')} kWp
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 text-gray-700">
                       {new Date(plant.operation_date).toLocaleDateString('pt-BR')}
                     </td>
                     <td className="py-3 px-4">
@@ -155,13 +155,25 @@ export default function PowerPlantsPage() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -171,8 +183,8 @@ export default function PowerPlantsPage() {
               </tbody>
             </table>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 } 

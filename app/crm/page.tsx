@@ -109,31 +109,31 @@ export default function CRMPage() {
       {/* Pipeline Kanban */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4">
         {stages.map((stage) => (
-          <Card key={stage.key} className="min-h-[500px]">
-            <CardHeader className="pb-3">
+          <div key={stage.key} className="bg-white border border-gray-200 rounded-lg shadow-sm min-h-[500px]">
+            <div className="px-4 py-3 border-b border-gray-100">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium">{stage.label}</CardTitle>
+                <h3 className="text-sm font-medium text-gray-900">{stage.label}</h3>
                 <Badge className={stage.color}>
                   {getClientsByStage(stage.key).length}
                 </Badge>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
+            </div>
+            <div className="p-4 space-y-3">
               {getClientsByStage(stage.key).map((client) => (
-                <div key={client.id} className="p-3 bg-gray-50 rounded-lg border">
-                  <div className="font-medium text-sm">{client.name}</div>
+                <div key={client.id} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                  <div className="font-medium text-sm text-gray-900">{client.name}</div>
                   {client.company_name && (
-                    <div className="text-xs text-gray-500 flex items-center gap-1">
+                    <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                       <Building className="h-3 w-3" />
                       {client.company_name}
                     </div>
                   )}
-                  <div className="text-xs text-gray-500 flex items-center gap-1">
+                  <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                     <Mail className="h-3 w-3" />
                     {client.email}
                   </div>
                   {client.phone && (
-                    <div className="text-xs text-gray-500 flex items-center gap-1">
+                    <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                       <Phone className="h-3 w-3" />
                       {client.phone}
                     </div>
@@ -148,8 +148,8 @@ export default function CRMPage() {
                   </div>
                 </div>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
     </div>

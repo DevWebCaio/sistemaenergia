@@ -183,49 +183,50 @@ export default function SettingsPage() {
 
         {/* General Settings */}
         <TabsContent value="general" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-gray-100">
+              <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
                 <Globe className="h-5 w-5" />
                 Configurações Gerais
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
                 Configurações básicas do sistema
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </p>
+            </div>
+            <div className="px-6 py-4 space-y-4">
               {getSettingsByCategory("general").map((setting) => (
                 <div key={setting.id} className="space-y-2">
-                  <Label htmlFor={setting.key}>{setting.description}</Label>
+                  <Label htmlFor={setting.key} className="text-gray-700">{setting.description}</Label>
                   <Input
                     id={setting.key}
                     value={setting.value}
                     onChange={(e) => handleSettingChange(setting.key, e.target.value)}
                     placeholder={setting.description}
+                    className="border-gray-200 focus:border-blue-500"
                   />
                 </div>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </TabsContent>
 
         {/* Notifications Settings */}
         <TabsContent value="notifications" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-gray-100">
+              <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
                 <Bell className="h-5 w-5" />
                 Configurações de Notificação
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
                 Gerencie como você recebe notificações
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </p>
+            </div>
+            <div className="px-6 py-4 space-y-4">
               {getSettingsByCategory("notifications").map((setting) => (
                 <div key={setting.id} className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label>{setting.description}</Label>
+                    <Label className="text-gray-700">{setting.description}</Label>
                     <p className="text-sm text-gray-500">
                       {setting.key === "notification_email" 
                         ? "Receber notificações por email"
@@ -241,31 +242,31 @@ export default function SettingsPage() {
                   />
                 </div>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </TabsContent>
 
         {/* Payments Settings */}
         <TabsContent value="payments" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="px-6 py-4 border-b border-gray-100">
+              <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
                 <CreditCard className="h-5 w-5" />
                 Configurações de Pagamento
-              </CardTitle>
-              <CardDescription>
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
                 Configure gateways de pagamento
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </p>
+            </div>
+            <div className="px-6 py-4 space-y-4">
               {getSettingsByCategory("payments").map((setting) => (
                 <div key={setting.id} className="space-y-2">
-                  <Label htmlFor={setting.key}>{setting.description}</Label>
+                  <Label htmlFor={setting.key} className="text-gray-700">{setting.description}</Label>
                   <select
                     id={setting.key}
                     value={setting.value}
                     onChange={(e) => handleSettingChange(setting.key, e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="stripe">Stripe</option>
                     <option value="pagseguro">PagSeguro</option>
@@ -273,8 +274,8 @@ export default function SettingsPage() {
                   </select>
                 </div>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </TabsContent>
 
         {/* Security Settings */}

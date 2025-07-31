@@ -96,14 +96,14 @@ export default function ConsumerUnitsPage() {
       </div>
 
       {/* Lista de UCs */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Unidades Consumidoras</CardTitle>
-          <CardDescription>
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900">Unidades Consumidoras</h3>
+          <p className="text-sm text-gray-600 mt-1">
             Lista de todas as unidades consumidoras cadastradas
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </p>
+        </div>
+        <div className="px-6 py-4">
           {/* Busca */}
           <div className="mb-4">
             <div className="relative">
@@ -112,7 +112,7 @@ export default function ConsumerUnitsPage() {
                 placeholder="Buscar UCs..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 border-gray-200 focus:border-blue-500"
               />
             </div>
           </div>
@@ -121,30 +121,30 @@ export default function ConsumerUnitsPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left py-3 px-4">Nome</th>
-                  <th className="text-left py-3 px-4">Instalação</th>
-                  <th className="text-left py-3 px-4">Distribuidora</th>
-                  <th className="text-left py-3 px-4">Consumo Mensal</th>
-                  <th className="text-left py-3 px-4">Status</th>
-                  <th className="text-left py-3 px-4">Ações</th>
+                <tr className="border-b border-gray-100">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Nome</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Instalação</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Distribuidora</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Consumo Mensal</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Status</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredUnits.map((unit) => (
-                  <tr key={unit.id} className="border-b hover:bg-gray-50">
+                  <tr key={unit.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                     <td className="py-3 px-4">
-                      <div className="font-medium">{unit.name}</div>
+                      <div className="font-medium text-gray-900">{unit.name}</div>
                       <div className="text-sm text-gray-500">{unit.address}</div>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="font-medium">{unit.installation_number}</div>
+                      <div className="font-medium text-gray-900">{unit.installation_number}</div>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="text-sm">{unit.distributor_id}</div>
+                      <div className="text-sm text-gray-700">{unit.distributor_id}</div>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="font-medium">
+                      <div className="font-medium text-gray-900">
                         {unit.monthly_consumption.toLocaleString('pt-BR')} kWh
                       </div>
                       <div className="text-sm text-gray-500">Classe {unit.tariff_class}</div>
@@ -156,13 +156,25 @@ export default function ConsumerUnitsPage() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -172,8 +184,8 @@ export default function ConsumerUnitsPage() {
               </tbody>
             </table>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 } 

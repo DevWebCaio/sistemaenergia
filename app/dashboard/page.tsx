@@ -176,85 +176,73 @@ export default function DashboardPage() {
 
       {/* Métricas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Unidades Consumidoras</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalConsumerUnits}</div>
-            <p className="text-xs text-muted-foreground">
-              +2 este mês
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-900">Unidades Consumidoras</h3>
+            <Building2 className="h-4 w-4 text-gray-400" />
+          </div>
+          <div className="text-2xl font-bold text-gray-900">{stats.totalConsumerUnits}</div>
+          <p className="text-xs text-gray-500 mt-1">
+            +2 este mês
+          </p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Usinas de Energia</CardTitle>
-            <Zap className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalPowerPlants}</div>
-            <p className="text-xs text-muted-foreground">
-              Capacidade total: {stats.totalCapacity.toFixed(1)} kWp
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-900">Usinas de Energia</h3>
+            <Zap className="h-4 w-4 text-gray-400" />
+          </div>
+          <div className="text-2xl font-bold text-gray-900">{stats.totalPowerPlants}</div>
+          <p className="text-xs text-gray-500 mt-1">
+            Capacidade total: {stats.totalCapacity.toFixed(1)} kWp
+          </p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Receita Mensal</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              R$ {stats.monthlyRevenue.toLocaleString('pt-BR')}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              +12% vs mês anterior
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-900">Receita Mensal</h3>
+            <DollarSign className="h-4 w-4 text-gray-400" />
+          </div>
+          <div className="text-2xl font-bold text-gray-900">
+            R$ {stats.monthlyRevenue.toLocaleString('pt-BR')}
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            +12% vs mês anterior
+          </p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Contratos Ativos</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.activeContracts}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.pendingInvoices} faturas pendentes
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-900">Contratos Ativos</h3>
+            <FileText className="h-4 w-4 text-gray-400" />
+          </div>
+          <div className="text-2xl font-bold text-gray-900">{stats.activeContracts}</div>
+          <p className="text-xs text-gray-500 mt-1">
+            {stats.pendingInvoices} faturas pendentes
+          </p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Performance</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">98.5%</div>
-            <p className="text-xs text-muted-foreground">
-              Eficiência média das usinas
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-900">Performance</h3>
+            <TrendingUp className="h-4 w-4 text-gray-400" />
+          </div>
+          <div className="text-2xl font-bold text-gray-900">98.5%</div>
+          <p className="text-xs text-gray-500 mt-1">
+            Eficiência média das usinas
+          </p>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Clientes</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">24</div>
-            <p className="text-xs text-muted-foreground">
-              +3 novos este mês
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-900">Clientes</h3>
+            <Users className="h-4 w-4 text-gray-400" />
+          </div>
+          <div className="text-2xl font-bold text-gray-900">24</div>
+          <p className="text-xs text-gray-500 mt-1">
+            +3 este mês
+          </p>
+        </div>
       </div>
 
       {/* Atividades Recentes */}
